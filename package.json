@@ -1,0 +1,19 @@
+{
+  "name": "recipe-app-api",
+  "version": "1.0.0",
+  "description": "API for recipe app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miamiyankee13/recipe-app-api.git"
+  },
+  "author": "Anthony D'Amico",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/miamiyankee13/recipe-app-api/issues"
+  },
+  "homepage": "https://github.com/miamiyankee13/recipe-app-api#readme"
+}
