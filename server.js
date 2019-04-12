@@ -8,6 +8,8 @@ const cors = require('cors');
 //import config variables
 const { PORT, DATABASE_URL, CLIENT_ORIGIN } = require('./config');
 
+const { Recipe } = require('./models');
+
 //configure mongoose to use ES6 promises
 mongoose.Promise = global.Promise; 
 
@@ -24,7 +26,14 @@ app.use(
 
 //initial route
 app.get('/', (req, res) => {
-    res.json({message: "hello!"})
+    return Recipe.find().sort({ name: 1 })
+            .then(recipes => {
+                return res.json({ recipes: recipes.map(recipe => recipe.serialize())});
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong'});
+            });
 });
 
 //catch all handler
