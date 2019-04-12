@@ -1,33 +1,41 @@
 'use strict'
+//import dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
 
+//import config variables
 const { PORT, DATABASE_URL, CLIENT_ORIGIN } = require('./config');
 
+//configure mongoose to use ES6 promises
 mongoose.Promise = global.Promise; 
 
+//create new app instance
 const app = express();
 
+//middleware - logging & CORS
 app.use(morgan('common'));
-
 app.use(
     cors({
         origin: CLIENT_ORIGIN
     })
 );
 
-app.get('/', (req, res, next) => {
+//initial route
+app.get('/', (req, res) => {
     res.json({message: "hello!"})
 });
 
+//catch all handler
 app.use('*', (req, res) => {
     res.status(404).json({ message: "Not found" });
   });
 
-  let server;
 
+let server;
+
+//coordinate connection to database and running of HTTP server
 function runServer(databaseUrl, port = PORT) {
     return new Promise((resolve, reject) => {
         mongoose.connect(
@@ -50,6 +58,7 @@ function runServer(databaseUrl, port = PORT) {
     });
 }
 
+//coordinate disconnection from database and shutting down of HTTP server
 function closeServer() {
     return mongoose.disconnect().then(() => {
         return new Promise((resolve, reject) => {
@@ -64,8 +73,10 @@ function closeServer() {
     });
 }
 
+//make file an executable script and a module
 if (require.main === module) {
     runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
+//export modules for testing
 module.exports = { app, runServer, closeServer };
