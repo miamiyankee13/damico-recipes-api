@@ -5,10 +5,9 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
 
-//import config variables
+//import modules
 const { PORT, DATABASE_URL, CLIENT_ORIGIN } = require('./config');
-
-const { Recipe } = require('./models');
+const recipesRouter = require('./routers/recipes-router');
 
 //configure mongoose to use ES6 promises
 mongoose.Promise = global.Promise; 
@@ -16,25 +15,10 @@ mongoose.Promise = global.Promise;
 //create new app instance
 const app = express();
 
-//middleware - logging & CORS
+//middleware - logging, CORS, router
 app.use(morgan('common'));
-app.use(
-    cors({
-        origin: CLIENT_ORIGIN
-    })
-);
-
-//initial route
-app.get('/', (req, res) => {
-    return Recipe.find().sort({ name: 1 })
-            .then(recipes => {
-                return res.json({ recipes: recipes.map(recipe => recipe.serialize())});
-            })
-            .catch(err => {
-                console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
-            });
-});
+app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use('/api/recipes', recipesRouter);
 
 //catch all handler
 app.use('*', (req, res) => {
