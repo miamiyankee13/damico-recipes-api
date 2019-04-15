@@ -90,5 +90,52 @@ router.post('/', jsonParser, (req, res) => {
             });
 });
 
+//PUT - update a recipe
+router.put('/:id', jsonParser, (req, res) => {
+    if (!objectID.isValid(req.params.id)) {
+        const message = 'Bad ID';
+        console.error(message);
+        return res.status(400).json({ message });
+    }
+
+    return Recipe.findById(req.params.id)
+            .then(recipe => {
+                if (!recipe) {
+                    const message = 'ID not found'
+                    console.error(message);
+                    return res.status(400).json({ message });
+                } else {
+                    console.log('ID validated');
+                }
+
+                if (!(req.params.id && req.body._id && req.params.id === req.body._id)) {
+                    const message = `Request path id ${req.params.id} and request body id ${req.body._id} must match`;
+                    console.error(message);
+                    return res.status(400).json({ message });
+                }
+
+                const updatedRecipe = {};
+                const updateableFields = ['name', 'ingredients', 'instructions', 'sides', 'meal', 'type'];
+                updateableFields.forEach(field => {
+                    if (field in req.body) {
+                        updatedRecipe[field] = req.body[field];
+                    }
+                });
+
+                return Recipe.findByIdAndUpdate(recipe._id, { $set: updatedRecipe }, { new: true })
+                        .then(recipe => {
+                            return res.status(200).json(recipe.serialize());
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            return res.status(500).json({ message: 'Something went wrong'});
+                        });
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong'});
+            });
+});
+
 //export router instance
 module.exports = router;
