@@ -21,11 +21,11 @@ router.get('/', (req, res) => {
             })
             .catch(err => {
                 console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
+                return res.status(500).json({ message: 'Something went wrong' });
             });
 });
 
-//GET - retrieve individual recipe
+//GET - retrieve an individual recipe
 router.get('/:id', (req, res) => {
     if (!objectID.isValid(req.params.id)) {
         const message = 'Bad ID';
@@ -47,7 +47,7 @@ router.get('/:id', (req, res) => {
             })
             .catch(err => {
                 console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
+                return res.status(500).json({ message: 'Something went wrong' });
             });
 });
 
@@ -59,7 +59,7 @@ router.get('/meals/:meal', (req, res) => {
             })
             .catch(err => {
                 console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
+                return res.status(500).json({ message: 'Something went wrong' });
             });
 });
 
@@ -71,11 +71,11 @@ router.get('/types/:type', (req, res) => {
             })
             .catch(err => {
                 console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
+                return res.status(500).json({ message: 'Something went wrong' });
             });
 });
 
-//POST - create recipe
+//POST - create an individual recipe
 router.post('/', jsonParser, (req, res) => {
     const requiredFields = ['name', 'ingredients', 'instructions', 'sides', 'meal', 'type'];
     const missingField = requiredFields.find(field => !(field in req.body));
@@ -112,11 +112,11 @@ router.post('/', jsonParser, (req, res) => {
             })
             .catch(err => {
                 console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
+                return res.status(500).json({ message: 'Something went wrong' });
             });
 });
 
-//PUT - update a recipe
+//PUT - update an individual recipe
 router.put('/:id', jsonParser, (req, res) => {
     if (!objectID.isValid(req.params.id)) {
         const message = 'Bad ID';
@@ -154,12 +154,45 @@ router.put('/:id', jsonParser, (req, res) => {
                         })
                         .catch(err => {
                             console.error(err);
-                            return res.status(500).json({ message: 'Something went wrong'});
+                            return res.status(500).json({ message: 'Something went wrong' });
                         });
             })
             .catch(err => {
                 console.error(err);
-                return res.status(500).json({ message: 'Something went wrong'});
+                return res.status(500).json({ message: 'Something went wrong' });
+            });
+});
+
+//DELETE - delete an individual recipe
+router.delete('/:id', (req, res) => {
+    if (!objectID.isValid(req.params.id)) {
+        const message = 'Bad ID';
+        console.error(message);
+        return res.status(400).json({ message });
+    }
+
+    return Recipe.findById(req.params.id)
+            .then(recipe => {
+                if (!recipe) {
+                    const message = 'ID not found'
+                    console.error(message);
+                    return res.status(400).json({ message });
+                } else {
+                    console.log('ID validated');
+                }
+
+                return Recipe.findByIdAndRemove(recipe._id)
+                        .then(() => {
+                            return res.status(204).end()
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            return res.status(500).json({ message: 'Something went wrong' });
+                        });
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong' });
             });
 });
 
