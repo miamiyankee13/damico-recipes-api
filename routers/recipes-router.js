@@ -25,6 +25,30 @@ router.get('/', (req, res) => {
             });
 });
 
+//GET - retrieve all recipes by meal
+router.get('/meals/:meal', (req, res) => {
+    return Recipe.find({ meal: req.params.meal}).sort({ name: 1 })
+            .then(recipes => {
+                return res.json({ recipes: recipes.map(recipe => recipe.serialize())});
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong'});
+            });
+});
+
+//GET - retrieve all recipes by type
+router.get('/types/:type', (req, res) => {
+    return Recipe.find({ type: req.params.type}).sort({ name: 1 })
+            .then(recipes => {
+                return res.json({ recipes: recipes.map(recipe => recipe.serialize())});
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong'});
+            });
+});
+
 //POST - create recipe
 router.post('/', jsonParser, (req, res) => {
     const requiredFields = ['name', 'ingredients', 'instructions', 'sides', 'meal', 'type'];
