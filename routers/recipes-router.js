@@ -25,6 +25,32 @@ router.get('/', (req, res) => {
             });
 });
 
+//GET - retrieve individual recipe
+router.get('/:id', (req, res) => {
+    if (!objectID.isValid(req.params.id)) {
+        const message = 'Bad ID';
+        console.error(message);
+        return res.status(400).json({ message });
+    }
+
+    return Recipe.findById(req.params.id)
+            .then(recipe => {
+                if (!recipe) {
+                    const message = 'ID not found'
+                    console.error(message);
+                    return res.status(400).json({ message });
+                } else {
+                    console.log('ID validated');
+                }
+
+                return res.json(recipe.serialize());
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong'});
+            });
+});
+
 //GET - retrieve all recipes by meal
 router.get('/meals/:meal', (req, res) => {
     return Recipe.find({ meal: req.params.meal}).sort({ name: 1 })
