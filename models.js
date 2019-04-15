@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 //configure mongoose to use ES6 promises & createIndex
 mongoose.Promise = global.Promise;
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 
 //create recipe schema
 const recipeSchema = mongoose.Schema({
