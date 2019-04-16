@@ -85,19 +85,19 @@ describe('Recipe Endpoints', function() {
         });
 
         it('Should return individual recipe', function() {
-            let responseRecipe;
+            let recipe;
             return chai.request(app)
                     .get('/api/recipes')
                     .then(function(res) {
-                        responseRecipe = res.body.recipes[0];
+                        recipe = res.body.recipes[0];
                         return chai.request(app)
-                                .get(`/api/recipes/${responseRecipe._id}`)
+                                .get(`/api/recipes/${recipe._id}`)
                     })
                     .then(function(res) {
-                        expect(responseRecipe._id).to.equal(res.body._id);
-                        expect(responseRecipe.name).to.equal(res.body.name);
-                        expect(responseRecipe.meal).to.equal(res.body.meal);
-                        expect(responseRecipe.type).to.equal(res.body.type);
+                        expect(res.body._id).to.equal(recipe._id);
+                        expect(res.body.name).to.equal(recipe.name);
+                        expect(res.body.meal).to.equal(recipe.meal);
+                        expect(res.body.type).to.equal(recipe.type);
                     })
                     .catch(function(err) {
                         if (err instanceof chai.AssertionError) {
@@ -145,5 +145,37 @@ describe('Recipe Endpoints', function() {
                         }
                     });
         });
+    });
+
+    describe('POST Endpoints', function() {
+
+        it('Should create a new recipe', function() {
+            const newRecipe = generateRecipeData();
+            return chai.request(app)
+                    .post('/api/recipes')
+                    .send(newRecipe)
+                    .then(function(res) {
+                        expect(res).to.have.status(201);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.a('object');
+                        expect(res.body).to.include.keys('_id', 'name', 'ingredients', 'instructions', 'sides', 'meal', 'type');
+                        expect(res.body._id).to.not.be.null;
+                        expect(res.body.name).to.equal(newRecipe.name);
+                        expect(res.body.meal).to.equal(newRecipe.meal);
+                        expect(res.body.type).to.equal(newRecipe.type);
+                        return Recipe.findById(res.body._id);
+                    })
+                    .then(function(recipe) {
+                        expect(recipe.name).to.equal(newRecipe.name);
+                        expect(recipe.meal).to.equal(newRecipe.meal);
+                        expect(recipe.type).to.equal(newRecipe.type);
+                    })
+                    .catch(function(err) {
+                        if (err instanceof chai.AssertionError) {
+                            throw err;
+                        }
+                    });
+        });
+
     });
 });
