@@ -147,7 +147,7 @@ describe('Recipe Endpoints', function() {
         });
     });
 
-    describe('POST Endpoints', function() {
+    describe('POST Endpoint', function() {
 
         it('Should create a new recipe', function() {
             const newRecipe = generateRecipeData();
@@ -177,5 +177,45 @@ describe('Recipe Endpoints', function() {
                     });
         });
 
+    });
+
+    describe('PUT Endpoint', function() {
+
+        it('Should update a recipe', function() {
+            const updateData = {
+                name: 'Cookies',
+                ingredients: ['Sugar', 'Flour', 'Eggs'],
+                instructions: ['Mix ingredients', 'Bake in oven at 450'],
+                sides: ['Milk', 'Peanut Butter'],
+                meal: 'dessert',
+                type: 'cookies'
+            }
+            return Recipe.findOne()
+                    .then(function(recipe) {
+                        updateData._id = recipe._id;
+                        return chai.request(app)
+                                .put(`/api/recipes/${recipe._id}`)
+                                .send(updateData)
+                                .then(function(res) {
+                                    expect(res).to.have.status(200);
+                                    return Recipe.findById(updateData._id)
+                                })
+                                .then(function(recipe) {
+                                    expect(recipe.name).to.equal(updateData.name);
+                                    expect(recipe.meal).to.equal(updateData.meal);
+                                    expect(recipe.type).to.equal(updateData.type);
+                                })
+                                .catch(function(err) {
+                                    if (err instanceof chai.AssertionError) {
+                                        throw err;
+                                    }
+                                });
+                    })
+                    .catch(function(err) {
+                        if (err instanceof chai.AssertionError) {
+                            throw err;
+                        }
+                    });
+        });
     });
 });
