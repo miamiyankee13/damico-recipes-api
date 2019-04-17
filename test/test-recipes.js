@@ -218,4 +218,34 @@ describe('Recipe Endpoints', function() {
                     });
         });
     });
+
+    describe('DELETE Endpoint', function() {
+
+        it('Should delete a recipe', function() {
+            let recipe;
+            return Recipe.findOne()
+                    .then(function(_recipe) {
+                        recipe = _recipe;
+                        return chai.request(app)
+                                .delete(`/api/recipes/${recipe._id}`)
+                                .then(function(res) {
+                                    expect(res).to.have.status(204);
+                                    return Recipe.findById(recipe._id)
+                                })
+                                .then(function(_player) {
+                                    expect(_player).to.be.null;
+                                })
+                                .catch(function(err) {
+                                    if (err instanceof chai.AssertionError) {
+                                        throw err;
+                                    }
+                                });
+                    })
+                    .catch(function(err) {
+                        if (err instanceof chai.AssertionError) {
+                            throw err;
+                        }
+                    });
+        });
+    });
 });
