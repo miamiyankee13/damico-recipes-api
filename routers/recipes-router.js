@@ -13,20 +13,8 @@ const jsonParser = bodyParser.json();
 //create new router instance
 const router = express.Router();
 
-//GET - retrieve all recipes
-router.get('/', (req, res) => {
-    return Recipe.find().sort({ name: 1 })
-            .then(recipes => {
-                return res.json({ recipes: recipes.map(recipe => recipe.serialize())});
-            })
-            .catch(err => {
-                console.error(err);
-                return res.status(500).json({ message: 'Something went wrong' });
-            });
-});
-
-//GET - retrieve an individual recipe
-router.get('/:id', (req, res) => {
+//middlewate - ID validation
+function validateId(req, res, next) {
     if (!objectID.isValid(req.params.id)) {
         const message = 'Bad ID';
         console.error(message);
@@ -41,8 +29,31 @@ router.get('/:id', (req, res) => {
                     return res.status(400).json({ message });
                 } else {
                     console.log('ID validated');
+                    next();
                 }
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong' });
+            });
+}
 
+//GET - retrieve all recipes
+router.get('/', (req, res) => {
+    return Recipe.find().sort({ name: 1 })
+            .then(recipes => {
+                return res.json({ recipes: recipes.map(recipe => recipe.serialize())});
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ message: 'Something went wrong' });
+            });
+});
+
+//GET - retrieve an individual recipe
+router.get('/:id', validateId, (req, res) => {
+    return Recipe.findById(req.params.id)
+            .then(recipe => {
                 return res.json(recipe.serialize());
             })
             .catch(err => {
@@ -117,83 +128,35 @@ router.post('/', jsonParser, (req, res) => {
 });
 
 //PUT - update an individual recipe
-router.put('/:id', jsonParser, (req, res) => {
-    if (!objectID.isValid(req.params.id)) {
-        const message = 'Bad ID';
-        console.error(message);
-        return res.status(400).json({ message });
-    }
+router.put('/:id', jsonParser, validateId, (req, res) => {
+    const updatedRecipe = {};
+    const updateableFields = ['name', 'ingredients', 'instructions', 'sides', 'meal', 'type'];
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            updatedRecipe[field] = req.body[field];
+        }
+    });
 
-    return Recipe.findById(req.params.id)
+    return Recipe.findByIdAndUpdate(req.params.id, { $set: updatedRecipe }, { new: true })
             .then(recipe => {
-                if (!recipe) {
-                    const message = 'ID not found'
-                    console.error(message);
-                    return res.status(400).json({ message });
-                } else {
-                    console.log('ID validated');
-                }
-
-                if (!(req.params.id && req.body._id && req.params.id === req.body._id)) {
-                    const message = `Request path id ${req.params.id} and request body id ${req.body._id} must match`;
-                    console.error(message);
-                    return res.status(400).json({ message });
-                }
-
-                const updatedRecipe = {};
-                const updateableFields = ['name', 'ingredients', 'instructions', 'sides', 'meal', 'type'];
-                updateableFields.forEach(field => {
-                    if (field in req.body) {
-                        updatedRecipe[field] = req.body[field];
-                    }
-                });
-
-                return Recipe.findByIdAndUpdate(recipe._id, { $set: updatedRecipe }, { new: true })
-                        .then(recipe => {
-                            return res.status(200).json(recipe.serialize());
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            return res.status(500).json({ message: 'Something went wrong' });
-                        });
+                return res.status(200).json(recipe.serialize());
             })
             .catch(err => {
                 console.error(err);
                 return res.status(500).json({ message: 'Something went wrong' });
-            });
+            });           
 });
 
 //DELETE - delete an individual recipe
-router.delete('/:id', (req, res) => {
-    if (!objectID.isValid(req.params.id)) {
-        const message = 'Bad ID';
-        console.error(message);
-        return res.status(400).json({ message });
-    }
-
-    return Recipe.findById(req.params.id)
-            .then(recipe => {
-                if (!recipe) {
-                    const message = 'ID not found'
-                    console.error(message);
-                    return res.status(400).json({ message });
-                } else {
-                    console.log('ID validated');
-                }
-
-                return Recipe.findByIdAndRemove(recipe._id)
-                        .then(() => {
-                            return res.status(204).end()
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            return res.status(500).json({ message: 'Something went wrong' });
-                        });
+router.delete('/:id', validateId, (req, res) => {
+   return Recipe.findByIdAndRemove(req.params.id)
+            .then(() => {
+                return res.status(204).end()
             })
             .catch(err => {
                 console.error(err);
                 return res.status(500).json({ message: 'Something went wrong' });
-            });
+            });    
 });
 
 //export router instance
