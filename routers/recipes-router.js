@@ -13,7 +13,7 @@ const jsonParser = bodyParser.json();
 //create new router instance
 const router = express.Router();
 
-//middlewate - ID validation
+//middleware - ID validation
 function validateId(req, res, next) {
     if (!objectID.isValid(req.params.id)) {
         const message = 'Bad ID';
