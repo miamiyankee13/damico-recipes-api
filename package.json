@@ -1,7 +1,7 @@
 {
-  "name": "recipe-app-api",
+  "name": "damico-recipes-api",
   "version": "1.0.0",
-  "description": "API for recipe app",
+  "description": "API for D'Amico Recipes client",
   "main": "index.js",
   "scripts": {
     "test": "mocha --exit",
