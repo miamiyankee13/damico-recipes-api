@@ -2,7 +2,7 @@
 
 ## Summary
 D'Amico Recipes is a personal recipe tracker for the D'Amico family.
-This API can be easily accessed via the [D'Amico Recipes Client](https://github.com/miamiyankee13/damico-recipes-client).
+This API can be easily accessed via the D'Amico Recipes [client](https://github.com/miamiyankee13/damico-recipes-client).
 
 ## API Documentation
 Coming Soon!
