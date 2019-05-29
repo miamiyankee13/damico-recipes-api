@@ -1,0 +1,11 @@
+language: node_js
+node_js: node
+services:
+- mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: TM5OZcNVE2fVopwC5itu3hkOISSfytR6Kp2Y1APNny7kK0zhbUu+8er2DWjIH7KsSmlKR10cPHBS/5pMwQ2KpeGe1PlC7pmfjiZzA7ibhP6slX8AbZj+vCW8Mh05hAXyfSgS0iF3kj6GBhOBhmrAfOF5A+xlspMUr3n+widXJ5SPeIZoX4teiC18ganVP8M+mGWBI/syc7r1GNoy/0f4x2sqUZH+IuCOaKrnNWFM38RxIKarOoaX+zg7yy3YfSHuR4bUQuwf0oAAfYvaHc7mTsH4w9ftXE3123gTPGYpEPN/Pua8XTAjs71xVfcOekRJs5aR5DGkKoLsRZRPDOvm2OEcmp5GCZb/5Ht1/oAtaJzjP6Nkv8q4C8YF6zM2IiIJFgQGGtsAJhgllh9/0V7aqKvp6/MlRwgBzBCexQx4ekTPjq1MlB2Fp/tGxAeotDZRwaoO5/WjXAvwi6DOV/ag426sE5GUzZphl1gbbKJVdqgsuiLGGPry7wd2A+J+TWfe8p0M0L1L8P60uSTyix+A+fgCma4jaE7UEkoKtLfDqqAjF64pCh2ZF4c1jmhBMQL0Obqg5K4nKO4JKbyQK6KK4yaocovqb0upZGB9zDaqnlSAah6CM45vJnhQH03veZlxsbGSBcdDoizFl8zYRSewe34/aB/FYPHPeIY+eqqUcjE=
+  app: damico-recipes-api
+  on:
+    repo: miamiyankee13/damico-recipes-api
