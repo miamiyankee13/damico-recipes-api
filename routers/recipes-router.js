@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const objectID = require('mongodb').ObjectID;
 
-//import mongoose model
+//import mongoose data model
 const { Recipe } = require('../models');
 
 //declare JSON parser
